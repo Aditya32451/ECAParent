@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up</title>
+    <link rel="stylesheet" type="text/css" href="styles\styleSignUp.css">
+    <script>
+
+    </script>
+</head>
+<body>
+    <div class="form">
+        <p id = "title">Sign Up</p>
+        <p>All information is required</p>
+            <input type="email" id="userEmail" name="username" placeholder="Email">
+            <input type="text" id="regNumber" name="regNumber" placeholder="Registration Number">
+            <input type="password" id="userPassword" name="password" placeholder="Password">
+            <input type="password" id="userPasswordConfirm" name="passwordConfirm" placeholder="Confirm Password">
+            <button id="signUpButton">Sign Up</button>
+            
+    </div>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { 
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import {
+            getAuth,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"
+        import {
+            getFirestore,
+            doc,
+            setDoc
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js"
+        const firebaseConfig = {
+          apiKey: "AIzaSyAgwQZwXyDCdC9n2qOYH1mWX22KujsG5Ys",
+          authDomain: "eca-program.firebaseapp.com",
+          projectId: "eca-program",
+          storageBucket: "eca-program.appspot.com",
+          messagingSenderId: "116171510985",
+          appId: "1:116171510985:web:12baf1351a622460b22918"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app)
+
+        const userEmail = document.querySelector('#userEmail')
+        const userPassword = document.querySelector('#userPassword')
+        const userPasswordConfirm = document.querySelector('#userPasswordConfirm')
+        const regNumber = document.querySelector('#regNumber')
+        const signInButton = document.querySelector('#signUpButton')
+
+        const SignUp = async() => {
+            const Password = userPassword.value
+            const PasswordConfirm = userPasswordConfirm.value
+            const Email = userEmail.value
+            const rNumber = regNumber.value
+            if (Password  == null || PasswordConfirm  == null|| Email  == null|| rNumber == null) {
+                alert("Please make sure you have filled in all the fields")
+                console.log(Password, PasswordConfirm, Email, rNumber)
+            }
+            else if (Password == PasswordConfirm) {
+                DatabaseUpdater()
+                CreateUser()
+                SignIn()
+            }
+            else {
+                alert("Passwords do not match. Please Recheck!")
+            }
+        }
+        
+        const SignIn = async() => {
+            const Email = userEmail.value
+            const Password = userPassword.value
+            signInWithEmailAndPassword(auth, Email, Password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                alert("Signed In")    
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode + errorMessage)
+            })
+        } 
+        const CreateUser = async() => {
+            createUserWithEmailAndPassword(auth, Email, Password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    console.log(user);
+                    alert("Account Created")    
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    alert(errorMessage)
+                })
+        }
+        const DatabaseUpdater = async() => {
+            const db = getFirestore(app)
+            var id = regNumber.value
+            var email = userEmail.value
+            await setDoc(doc(db, "studentInfo", id), {
+                email: email,
+                registrationNumber: id
+            })
+        }
+
+        const checkSignedIn = async() => {
+            onAuthStateChanged(auth, user => {
+                if (user) {
+                    window.location.replace("index.html");
+                }
+            })
+        }
+        checkSignedIn()
+
+
+        signUpButton.addEventListener('click', SignUp)
+    </script>
+</body>
+</html>

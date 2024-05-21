@@ -1,0 +1,51 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <a href="indexLogin.html">
+        Click Here to Redirect
+    </a>
+    <button id = "signOutButton">Sign Out</button>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js"
+        // https://firebase.google.com/docs/web/setup#available-libraries
+        const firebaseConfig = {
+          apiKey: "AIzaSyAgwQZwXyDCdC9n2qOYH1mWX22KujsG5Ys",
+          authDomain: "eca-program.firebaseapp.com",
+          projectId: "eca-program",
+          storageBucket: "eca-program.appspot.com",
+          messagingSenderId: "116171510985",
+          appId: "1:116171510985:web:12baf1351a622460b22918"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app)
+
+        const signOutButton = document.querySelector("#signOutButton")
+        const checkSignedIn = async() => {
+            onAuthStateChanged(auth, user => {
+                if (user) {
+                    signOutButton.style.display = 'block'
+                }
+                else {
+                    signOutButton.style.display = 'none'
+                }
+            })
+        }
+        const SignOut = async() => {
+            await signOut(auth);
+        }
+        checkSignedIn()
+        signOutButton.addEventListener('click', SignOut)
+   </script>
+</body>
+</html>
